@@ -24,8 +24,20 @@
         "
         id="timer-1"
       >
-        <h1 class="visually-hidden">Countdown timer</h1>
-        <h2 class="title text-center">New 2022 year will come in ...</h2>
+        <h1 class="text-center mb-5">Countdown timer</h1>
+        <form>
+          <label class="d-block text-center" for="datetime"
+            >Choose a date and time for<br />
+            <span class="text-primary">your impotant event</span>
+          </label>
+          <input
+            id="datetime"
+            class="form-control mb-3"
+            type="datetime-local"
+            placeholder="Select DataTime"
+          />
+        </form>
+
         <div class="d-flex">
           <div
             class="
@@ -34,13 +46,12 @@
               flex-column
               align-items-center
               shadow
-              p-3
               mb-5
               bg-body
               rounded
             "
           >
-            <span class="value display-1" data-value="days">00</span>
+            <span class="value display-1" data-value="days"></span>
             <span class="label">Days</span>
           </div>
 
@@ -51,13 +62,12 @@
               flex-column
               align-items-center
               shadow
-              p-3
               mb-5
               bg-body
               rounded
             "
           >
-            <span class="value display-1" data-value="hours">00</span>
+            <span class="value display-1" data-value="hours"></span>
             <span class="label">Hours</span>
           </div>
 
@@ -68,13 +78,12 @@
               flex-column
               align-items-center
               shadow
-              p-3
               mb-5
               bg-body
               rounded
             "
           >
-            <span class="value display-1" data-value="mins">00</span>
+            <span class="value display-1" data-value="mins"></span>
             <span class="label">Minutes</span>
           </div>
 
@@ -85,16 +94,16 @@
               flex-column
               align-items-center
               shadow
-              p-3
               mb-5
               bg-body
               rounded
             "
           >
-            <span class="value display-1" data-value="secs">00</span>
+            <span class="value display-1" data-value="secs"></span>
             <span class="label">Seconds</span>
           </div>
         </div>
+        <p class="timeIsOver h2 text-danger"></p>
       </div>
     </div>
 
