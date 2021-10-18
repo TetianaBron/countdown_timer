@@ -1,4 +1,5 @@
 import './sass/main.scss';
+const sound = require('./sound/sound.mp3');
 
 const refs = {
   datetime: document.querySelector('#datetime'),
@@ -39,11 +40,24 @@ function getTodayData() {
 refs.datetime.setAttribute('min', getTodayData());
 
 class CountdownTimer {
-  constructor({ onTick, onTimeIsOver }) {
+  constructor({
+    onTick,
+    onTimeIsOver,
+    removeStringTimeIsOver,
+    setItemtoLocalStorage,
+    getItemFromLocalStorage,
+    clearLocalStorage,
+    playAudio,
+  }) {
     this.intervalId = null;
     this.targetDate = null;
     this.onTick = onTick;
     this.onTimeIsOver = onTimeIsOver;
+    this.removeStringTimeIsOver = removeStringTimeIsOver;
+    this.setItemtoLocalStorage = setItemtoLocalStorage;
+    this.getItemFromLocalStorage = getItemFromLocalStorage;
+    this.clearLocalStorage = clearLocalStorage;
+    this.playAudio = playAudio;
 
     this.init();
   }
@@ -59,6 +73,8 @@ class CountdownTimer {
     this.onTick(time);
   }
   start() {
+    this.removeStringTimeIsOver();
+    this.setItemtoLocalStorage();
     this.intervalId = setInterval(() => {
       //Plus 3 hours - Ukraine's time zone
       const currentTime = Date.now() + 3 * 1000 * 60 * 60;
@@ -68,6 +84,7 @@ class CountdownTimer {
         clearInterval(this.intervalId);
         this.init();
         this.onTimeIsOver();
+        this.playAudio();
       } else {
         this.onTick(time);
       }
@@ -76,6 +93,7 @@ class CountdownTimer {
   stop() {
     clearInterval(this.intervalId);
     this.init();
+    this.clearLocalStorage();
   }
 
   getTimeComponents(time) {
@@ -97,6 +115,11 @@ const countdownTimer = new CountdownTimer({
   selector: '#timer-1',
   onTick: updateClockface,
   onTimeIsOver: addStringTimeIsOver,
+  removeStringTimeIsOver,
+  setItemtoLocalStorage,
+  getItemFromLocalStorage,
+  clearLocalStorage,
+  playAudio,
 });
 
 refs.datetime.addEventListener('input', handleOnInput);
@@ -108,6 +131,17 @@ function handleOnInput(e) {
   } else {
     countdownTimer.data = null;
     countdownTimer.stop();
+    countdownTimer.removeStringTimeIsOver();
+  }
+}
+
+populateInput();
+
+function populateInput() {
+  if (localStorage.getItem('targetDate')) {
+    countdownTimer.getItemFromLocalStorage();
+    refs.datetime.valueAsNumber = countdownTimer.data;
+    countdownTimer.start();
   }
 }
 
@@ -120,4 +154,28 @@ function updateClockface({ days, hours, mins, secs }) {
 
 function addStringTimeIsOver() {
   refs.timeIsOver.textContent = 'Congrats! Time is over!';
+}
+
+function removeStringTimeIsOver() {
+  if (refs.timeIsOver.textContent === '') {
+    return;
+  }
+  refs.timeIsOver.textContent = '';
+}
+
+function setItemtoLocalStorage() {
+  localStorage.setItem('targetDate', countdownTimer.data);
+}
+
+function getItemFromLocalStorage() {
+  countdownTimer.data = localStorage.getItem('targetDate');
+}
+
+function clearLocalStorage() {
+  localStorage.removeItem('targetDate');
+}
+
+function playAudio() {
+  const audio = new Audio(sound);
+  audio.play();
 }
