@@ -41,6 +41,7 @@ refs.datetime.setAttribute('min', getTodayData());
 
 class CountdownTimer {
   constructor({
+    audio,
     onTick,
     onTimeIsOver,
     removeStringTimeIsOver,
@@ -48,9 +49,11 @@ class CountdownTimer {
     getItemFromLocalStorage,
     clearLocalStorage,
     playAudio,
+    stopAudio,
   }) {
     this.intervalId = null;
     this.targetDate = null;
+    this.audio = audio;
     this.onTick = onTick;
     this.onTimeIsOver = onTimeIsOver;
     this.removeStringTimeIsOver = removeStringTimeIsOver;
@@ -58,6 +61,7 @@ class CountdownTimer {
     this.getItemFromLocalStorage = getItemFromLocalStorage;
     this.clearLocalStorage = clearLocalStorage;
     this.playAudio = playAudio;
+    this.stopAudio = stopAudio;
 
     this.init();
   }
@@ -73,6 +77,7 @@ class CountdownTimer {
     this.onTick(time);
   }
   start() {
+    this.stopAudio();
     this.removeStringTimeIsOver();
     this.setItemtoLocalStorage();
     this.intervalId = setInterval(() => {
@@ -84,7 +89,11 @@ class CountdownTimer {
         clearInterval(this.intervalId);
         this.init();
         this.onTimeIsOver();
-        this.playAudio();
+        if (this.targetDate > currentTime) {
+          this.audio.muted = false; //without it chrome gives error
+          this.audio.currentTime = 0;
+          this.playAudio();
+        }
       } else {
         this.onTick(time);
       }
@@ -94,6 +103,7 @@ class CountdownTimer {
     clearInterval(this.intervalId);
     this.init();
     this.clearLocalStorage();
+    this.stopAudio();
   }
 
   getTimeComponents(time) {
@@ -114,12 +124,14 @@ class CountdownTimer {
 const countdownTimer = new CountdownTimer({
   selector: '#timer-1',
   onTick: updateClockface,
+  audio: new Audio(sound),
   onTimeIsOver: addStringTimeIsOver,
   removeStringTimeIsOver,
   setItemtoLocalStorage,
   getItemFromLocalStorage,
   clearLocalStorage,
   playAudio,
+  stopAudio,
 });
 
 refs.datetime.addEventListener('input', handleOnInput);
@@ -176,6 +188,9 @@ function clearLocalStorage() {
 }
 
 function playAudio() {
-  const audio = new Audio(sound);
-  audio.play();
+  countdownTimer.audio.play();
+}
+
+function stopAudio() {
+  countdownTimer.audio.pause();
 }
