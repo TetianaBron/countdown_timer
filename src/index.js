@@ -82,7 +82,7 @@ class CountdownTimer {
     this.setItemtoLocalStorage();
     this.intervalId = setInterval(() => {
       //Plus 3 hours - Ukraine's time zone
-      const currentTime = Date.now() + 3 * 1000 * 60 * 60;
+      const currentTime = Date.now() + 2 * 1000 * 60 * 60; //+2 for winter-time, +3 for summer-time
       const deltaTime = this.targetDate - currentTime;
       const time = this.getTimeComponents(deltaTime);
       if (time.days < 1 && time.hours < 1 && time.mins < 1 && time.secs < 1) {
